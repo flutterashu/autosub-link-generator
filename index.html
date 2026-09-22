@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Auto-Subscribe Link Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            yt: {
+              red: '#FF0000',
+              hover: '#CC0000',
+              dark: '#0F0F0F',
+              card: '#1F1F1F',
+              border: '#2E2E2E'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #18181b;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #3f3f46;
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #52525b;
+    }
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.85; }
+    }
+    .animate-subtle {
+      animation: pulse-subtle 2s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col selection:bg-red-600 selection:text-white">
+
+  <header class="border-b border-zinc-800 bg-zinc-900/70 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-red-600 to-rose-500 flex items-center justify-center shadow-lg shadow-red-500/20">
+          <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+            AutoSub <span class="bg-red-500/10 text-red-400 text-xs px-2 py-0.5 rounded-full border border-red-500/20 font-medium">Link Studio</span>
+          </h1>
+          <p class="text-xs text-zinc-400">Force channel confirmation subscription link</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="howItWorksBtn" class="px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white bg-zinc-800/80 hover:bg-zinc-700/80 border border-zinc-700/60 rounded-lg transition">
+          How It Works
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 space-y-8">
+
+    <!-- Hero Announcement -->
+    <div class="text-center max-w-2xl mx-auto space-y-2">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs text-zinc-400 mb-1">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+        Works with @handles, custom URLs & Channel IDs
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+        Boost YouTube Subscribers with <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-rose-400">1-Click Prompts</span>
+      </h2>
+      <p class="text-sm sm:text-base text-zinc-400">
+        Turn visitors into subscribers automatically by appending the direct <code class="text-red-400 bg-red-950/40 px-1.5 py-0.5 rounded font-mono text-xs">?sub_confirmation=1</code> prompt modal.
+      </p>
+    </div>
+
+    <!-- Input Card -->
+    <div class="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-5 sm:p-7 shadow-xl backdrop-blur-sm">
+      <div class="space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <label for="channelInput" class="text-sm font-semibold text-zinc-200 flex items-center gap-2">
+            <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+            </svg>
+            Enter Channel URL, Handle, or ID
+          </label>
+          <div class="flex items-center gap-1.5 text-xs text-zinc-400">
+            <span>Examples:</span>
+            <button class="preset-btn px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition" data-url="@MrBeast">@MrBeast</button>
+            <button class="preset-btn px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition" data-url="@veritasium">@veritasium</button>
+            <button class="preset-btn px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition" data-url="youtube.com/c/NASA">NASA</button>
+          </div>
+        </div>
+
+        <div class="relative">
+          <input
+            type="text"
+            id="channelInput"
+            placeholder="e.g., https://www.youtube.com/@mkbhd or @mkbhd"
+            value="https://www.youtube.com/@mkbhd"
+            class="w-full bg-zinc-950 border border-zinc-700 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 text-white placeholder-zinc-500 text-sm sm:text-base rounded-xl px-4 py-3.5 pl-11 pr-24 transition outline-none"
+          />
+          <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+            </svg>
+          </div>
+          <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center space-x-1">
+            <button id="clearBtn" title="Clear input" class="p-1.5 text-zinc-400 hover:text-zinc-200 rounded-lg hover:bg-zinc-800 transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+            <button id="pasteBtn" title="Paste from clipboard" class="px-2.5 py-1 text-xs font-medium text-zinc-300 hover:text-white bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg transition">
+              Paste
+            </button>
+          </div>
+        </div>
+
+        <div class="border-t border-zinc-800/80 pt-3">
+          <button id="utmToggleBtn" type="button" class="flex items-center justify-between w-full text-xs font-medium text-zinc-400 hover:text-zinc-200 transition py-1">
+            <span class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+              </svg>
+              Add Analytics / UTM Campaign Tags (Optional)
+            </span>
+            <svg id="utmArrow" class="w-4 h-4 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+
+          <div id="utmContainer" class="hidden grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3">
+            <div>
+              <label class="block text-[11px] text-zinc-400 mb-1">utm_source</label>
+              <input type="text" id="utmSource" placeholder="e.g. instagram, twitter" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-zinc-200 focus:border-red-500 outline-none">
+            </div>
+            <div>
+              <label class="block text-[11px] text-zinc-400 mb-1">utm_medium</label>
+              <input type="text" id="utmMedium" placeholder="e.g. bio, footer, story" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-zinc-200 focus:border-red-500 outline-none">
+            </div>
+            <div>
+              <label class="block text-[11px] text-zinc-400 mb-1">utm_campaign</label>
+              <input type="text" id="utmCampaign" placeholder="e.g. bio_link_q3" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-zinc-200 focus:border-red-500 outline-none">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- Primary Generated Link & Snippets -->
+      <div class="lg:col-span-8 space-y-6">
+        <div class="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-5 sm:p-6 shadow-xl space-y-5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-semibold text-zinc-200 flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+              Generated Auto-Subscribe URL
+            </h3>
+            <span id="detectedFormatBadge" class="text-[11px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700">
+              Handle Format
+            </span>
+          </div>
+
+          <!-- Highlight Output Box -->
+          <div class="p-3.5 bg-zinc-950 border border-zinc-800 rounded-xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div class="overflow-x-auto custom-scrollbar py-1">
+              <span id="outputUrl" class="font-mono text-sm text-red-400 font-semibold break-all whitespace-normal select-all">
+                https://www.youtube.com/@mkbhd?sub_confirmation=1
+              </span>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <button id="copyPrimaryBtn" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 active:scale-95 text-white text-xs font-semibold rounded-lg shadow-md shadow-red-600/30 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                </svg>
+                <span id="copyPrimaryText">Copy Link</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Action Buttons Bar -->
+          <div class="flex flex-wrap gap-2.5 pt-1">
+            <a id="testLinkBtn" href="https://www.youtube.com/@mkbhd?sub_confirmation=1" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium rounded-lg border border-zinc-700 transition">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+              </svg>
+              Test in YouTube
+            </a>
+            <button id="openPreviewModalBtn" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium rounded-lg border border-zinc-700 transition">
+              <svg class="w-3.5 h-3.5 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+              Simulate Subscriber Popup
+            </button>
+            <button id="showQrBtn" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium rounded-lg border border-zinc-700 transition">
+              <svg class="w-3.5 h-3.5 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+              </svg>
+              Get QR Code
+            </button>
+          </div>
+
+          <div class="border-t border-zinc-800/80 pt-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-semibold text-zinc-300">Embed & Sharing Formats</h4>
+              <div class="flex gap-1 bg-zinc-950 p-1 rounded-lg border border-zinc-800 text-xs">
+                <button id="tabHtmlBtn" class="format-tab-btn active px-2.5 py-1 rounded-md bg-zinc-800 text-white font-medium transition" data-format="html">HTML Button</button>
+                <button id="tabMdBtn" class="format-tab-btn px-2.5 py-1 rounded-md text-zinc-400 hover:text-white font-medium transition" data-format="markdown">Markdown</button>
+                <button id="tabTextBtn" class="format-tab-btn px-2.5 py-1 rounded-md text-zinc-400 hover:text-white font-medium transition" data-format="short">Bio Link Text</button>
+              </div>
+            </div>
+
+            <!-- Snippet Preview Box -->
+            <div class="relative bg-zinc-950 border border-zinc-800 rounded-xl p-3 font-mono text-xs text-zinc-300 overflow-x-auto">
+              <pre id="snippetCode" class="whitespace-pre-wrap select-all custom-scrollbar max-h-32 text-zinc-300"></pre>
+              <button id="copySnippetBtn" class="absolute top-2.5 right-2.5 px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 rounded-md text-[11px] font-medium transition flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                </svg>
+                Copy Code
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Live QR Code & Smart Advice -->
+      <div class="lg:col-span-4 space-y-6">
+        
+        <!-- QR Code Card -->
+        <div class="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-5 shadow-xl space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-semibold text-zinc-200 flex items-center gap-2">
+              <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+              </svg>
+              Auto-Sub QR Code
+            </h3>
+            <span class="text-[10px] bg-red-500/10 text-red-400 px-2 py-0.5 rounded border border-red-500/20">Print Ready</span>
+          </div>
+          
+          <div class="bg-white p-3.5 rounded-xl flex items-center justify-center shadow-inner">
+            <img id="qrImage" src="" alt="YouTube Subscribe QR Code" class="w-44 h-44 object-contain" />
+          </div>
+
+          <p class="text-xs text-zinc-400 text-center">
+            Great for business cards, video end screens, event slides, and merchandise flyers!
+          </p>
+
+          <a id="downloadQrBtn" href="#" target="_blank" download="youtube-subscribe-qr.png" class="w-full inline-flex items-center justify-center gap-1.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium rounded-lg border border-zinc-700 transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Download QR Code Image
+          </a>
+        </div>
+
+        <!-- Creator Pro-Tips Card -->
+        <div class="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-5 text-xs text-zinc-300 space-y-3">
+          <div class="flex items-center gap-2 text-amber-400 font-semibold">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>
+            Where to use this link:
+          </div>
+          <ul class="space-y-2 text-zinc-400 list-disc list-inside leading-relaxed">
+            <li><strong class="text-zinc-200">Instagram & TikTok Bios:</strong> High conversion rate for traffic already interested in you.</li>
+            <li><strong class="text-zinc-200">Email Newsletters:</strong> In your author signature or welcome email sequence.</li>
+            <li><strong class="text-zinc-200">Personal Website / Blog:</strong> Replace standard channel links with this one.</li>
+            <li><strong class="text-zinc-200">Desktop Note:</strong> Shows the native subscription modal on web browsers. Mobile apps open the channel view.</li>
+          </ul>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Frequently Asked Questions Accordion -->
+    <div class="border border-zinc-800 bg-zinc-900/50 rounded-2xl p-6 space-y-4">
+      <h3 class="text-base font-bold text-white flex items-center gap-2">
+        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Frequently Asked Questions
+      </h3>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+        <div class="p-4 bg-zinc-950/70 border border-zinc-800 rounded-xl space-y-1.5">
+          <h4 class="font-semibold text-zinc-200">What does sub_confirmation=1 do?</h4>
+          <p class="text-zinc-400 leading-relaxed">
+            It is an official YouTube query parameter. When users open your channel URL with this flag on a desktop or mobile browser, YouTube renders an immediate confirmation popup: "Confirm Channel Subscription: Are you sure you want to subscribe to [Channel]?"
+          </p>
+        </div>
+
+        <div class="p-4 bg-zinc-950/70 border border-zinc-800 rounded-xl space-y-1.5">
+          <h4 class="font-semibold text-zinc-200">Does it violate YouTube Terms of Service?</h4>
+          <p class="text-zinc-400 leading-relaxed">
+            No! It is a built-in feature supported directly by YouTube. It never forces a silent background subscription (the user still intentionally clicks "Subscribe"), so it remains 100% compliant.
+          </p>
+        </div>
+
+        <div class="p-4 bg-zinc-950/70 border border-zinc-800 rounded-xl space-y-1.5">
+          <h4 class="font-semibold text-zinc-200">Can I link directly to a specific video?</h4>
+          <p class="text-zinc-400 leading-relaxed">
+            The subscription parameter works specifically for channel URLs (`/@handle`, `/channel/ID`, or `/c/name`). It does not open a subscription modal on standard `watch?v=` links.
+          </p>
+        </div>
+
+        <div class="p-4 bg-zinc-950/70 border border-zinc-800 rounded-xl space-y-1.5">
+          <h4 class="font-semibold text-zinc-200">What happens on mobile phones?</h4>
+          <p class="text-zinc-400 leading-relaxed">
+            If the user has the YouTube app installed, the deep link opens your channel page directly with the red subscribe button front-and-center. On mobile browsers, it opens the confirmation dialog.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div id="previewModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-zinc-900 border border-zinc-700 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-150">
+      
+      <!-- Fake Browser Bar -->
+      <div class="bg-zinc-950 px-4 py-2.5 border-b border-zinc-800 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-1.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+          <span class="ml-2 text-zinc-400 font-mono text-[11px] truncate max-w-[200px]" id="modalAddressBar">youtube.com</span>
+        </div>
+        <button id="closePreviewModalBtn" class="text-zinc-400 hover:text-white transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Mock YouTube Channel Interface -->
+      <div class="p-6 relative bg-zinc-900">
+        <!-- Blurred background channel banner & avatar -->
+        <div class="opacity-30 blur-[2px] pointer-events-none space-y-4 select-none">
+          <div class="h-20 bg-gradient-to-r from-red-900 to-zinc-800 rounded-xl w-full"></div>
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-full bg-zinc-700"></div>
+            <div class="space-y-1.5">
+              <div class="h-3 w-32 bg-zinc-700 rounded"></div>
+              <div class="h-2.5 w-20 bg-zinc-800 rounded"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- The Exact YouTube Confirmation Dialog -->
+        <div class="absolute inset-4 m-auto h-fit bg-[#212121] text-white p-5 rounded-xl border border-zinc-700 shadow-2xl space-y-4">
+          <div class="space-y-1.5">
+            <h4 class="font-bold text-sm text-zinc-100">Confirm channel subscription</h4>
+            <p class="text-xs text-zinc-300 leading-normal">
+              Stay updated with all the latest content <span id="dialogChannelName" class="font-semibold text-white">this channel</span>?
+            </p>
+          </div>
+
+          <div class="flex justify-end gap-2 pt-2">
+            <button id="modalCancelBtn" class="px-3.5 py-1.5 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-700/60 rounded-full transition">
+              Cancel
+            </button>
+            <button id="modalSubscribeBtn" class="px-4 py-1.5 text-xs font-semibold bg-white text-zinc-950 hover:bg-zinc-200 rounded-full transition">
+              Subscribe
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-zinc-950/80 px-4 py-2.5 text-center text-[11px] text-zinc-400 border-t border-zinc-800">
+        This is what your audience sees when they click your auto-subscribe link!
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 pointer-events-none transition-all duration-300 bg-zinc-900 border border-zinc-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3">
+    <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+      </svg>
+    </div>
+    <div class="text-xs font-medium" id="toastMessage">Copied to clipboard!</div>
+  </div>
+
+  <!-- How it works guide modal -->
+  <div id="guideModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-zinc-900 border border-zinc-800 max-w-lg w-full rounded-2xl p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <span class="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+          How the Auto-Subscribe Link Works
+        </h3>
+        <button id="closeGuideModalBtn" class="text-zinc-400 hover:text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs text-zinc-300 leading-relaxed">
+        <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800 space-y-1">
+          <p class="font-semibold text-zinc-100">Step 1: Parse the input</p>
+          <p class="text-zinc-400">Whether you type an @handle, full channel link, or ID, the tool formats it into the canonical YouTube address format.</p>
+        </div>
+        <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800 space-y-1">
+          <p class="font-semibold text-zinc-100">Step 2: Append confirmation query parameter</p>
+          <p class="text-zinc-400">The script safely injects <code class="text-red-400 bg-red-950/40 px-1 py-0.5 rounded font-mono">?sub_confirmation=1</code> without breaking existing query strings.</p>
+        </div>
+        <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800 space-y-1">
+          <p class="font-semibold text-zinc-100">Step 3: Share across all your channels</p>
+          <p class="text-zinc-400">When visitors click the link on a computer or browser, YouTube displays the official subscription confirmation modal right away!</p>
+        </div>
+      </div>
+
+      <div class="pt-2 flex justify-end">
+        <button id="guideGotItBtn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold text-xs rounded-lg transition">
+          Got it!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* Global Application State */
+    const state = {
+      rawInput: 'https://www.youtube.com/@mkbhd',
+      activeFormat: 'html',
+      generatedUrl: '',
+      channelTitle: 'MKBHD',
+      utm: {
+        source: '',
+        medium: '',
+        campaign: ''
+      }
+    };
+
+    /* DOM Selectors */
+    const channelInput = document.getElementById('channelInput');
+    const clearBtn = document.getElementById('clearBtn');
+    const pasteBtn = document.getElementById('pasteBtn');
+    const outputUrlEl = document.getElementById('outputUrl');
+    const copyPrimaryBtn = document.getElementById('copyPrimaryBtn');
+    const copyPrimaryText = document.getElementById('copyPrimaryText');
+    const testLinkBtn = document.getElementById('testLinkBtn');
+    const openPreviewModalBtn = document.getElementById('openPreviewModalBtn');
+    const showQrBtn = document.getElementById('showQrBtn');
+    const qrImage = document.getElementById('qrImage');
+    const downloadQrBtn = document.getElementById('downloadQrBtn');
+    const detectedFormatBadge = document.getElementById('detectedFormatBadge');
+    const snippetCode = document.getElementById('snippetCode');
+    const copySnippetBtn = document.getElementById('copySnippetBtn');
+    const formatTabBtns = document.querySelectorAll('.format-tab-btn');
+    const presetBtns = document.querySelectorAll('.preset-btn');
+    
+    // UTM Selectors
+    const utmToggleBtn = document.getElementById('utmToggleBtn');
+    const utmContainer = document.getElementById('utmContainer');
+    const utmArrow = document.getElementById('utmArrow');
+    const utmSource = document.getElementById('utmSource');
+    const utmMedium = document.getElementById('utmMedium');
+    const utmCampaign = document.getElementById('utmCampaign');
+
+    // Modals
+    const previewModal = document.getElementById('previewModal');
+    const closePreviewModalBtn = document.getElementById('closePreviewModalBtn');
+    const modalCancelBtn = document.getElementById('modalCancelBtn');
+    const modalSubscribeBtn = document.getElementById('modalSubscribeBtn');
+    const dialogChannelName = document.getElementById('dialogChannelName');
+    const modalAddressBar = document.getElementById('modalAddressBar');
+
+    const guideModal = document.getElementById('guideModal');
+    const howItWorksBtn = document.getElementById('howItWorksBtn');
+    const closeGuideModalBtn = document.getElementById('closeGuideModalBtn');
+    const guideGotItBtn = document.getElementById('guideGotItBtn');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+
+    /**
+     * Sanitizes and parses various YouTube channel input formats:
+     * - @handle
+     * - handle without @
+     * - youtube.com/@handle
+     * - youtube.com/c/ChannelName
+     * - youtube.com/channel/UCxxxxxxxxx
+     * - youtube.com/user/username
+     */
+    function parseYouTubeInput(input) {
+      let clean = (input || '').trim();
+
+      if (!clean) {
+        return {
+          normalizedUrl: 'https://www.youtube.com',
+          badgeText: 'Empty Input',
+          channelName: 'Channel'
+        };
+      }
+
+      // Handle raw @handle format
+      if (clean.startsWith('@')) {
+        const handle = clean.replace(/^@+/, '');
+        return {
+          normalizedUrl: `https://www.youtube.com/@${handle}`,
+          badgeText: 'Handle Format',
+          channelName: `@${handle}`
+        };
+      }
+
+      // If user typed only a bare username like "MrBeast" or "veritasium"
+      if (!clean.includes('/') && !clean.includes('.') && !clean.startsWith('http')) {
+        return {
+          normalizedUrl: `https://www.youtube.com/@${clean}`,
+          badgeText: 'Handle Format',
+          channelName: `@${clean}`
+        };
+      }
+
+      // Ensure protocol
+      if (!clean.startsWith('http://') && !clean.startsWith('https://')) {
+        clean = 'https://' + clean;
+      }
+
+      try {
+        const parsed = new URL(clean);
+        const host = parsed.hostname.toLowerCase();
+        let pathname = parsed.pathname;
+
+        // Strip trailing slashes
+        pathname = pathname.replace(/\/+$/, '');
+
+        // Determine channel representation
+        let channelName = 'Channel';
+        let badge = 'Channel URL';
+
+        if (pathname.includes('/@')) {
+          const parts = pathname.split('/@');
+          channelName = '@' + (parts[1] || 'creator');
+          badge = 'Handle URL';
+        } else if (pathname.includes('/channel/')) {
+          const parts = pathname.split('/channel/');
+          channelName = parts[1] || 'Channel';
+          badge = 'Channel ID';
+        } else if (pathname.includes('/c/')) {
+          const parts = pathname.split('/c/');
+          channelName = parts[1] || 'Creator';
+          badge = 'Custom URL';
+        } else if (pathname.includes('/user/')) {
+          const parts = pathname.split('/user/');
+          channelName = parts[1] || 'User';
+          badge = 'Legacy User URL';
+        } else if (pathname.length > 1) {
+          channelName = pathname.replace('/', '');
+        }
+
+        const canonicalBase = `https://${host}${pathname}`;
+
+        return {
+          normalizedUrl: canonicalBase,
+          badgeText: badge,
+          channelName: channelName
+        };
+      } catch (err) {
+        // Fallback for edge cases
+        return {
+          normalizedUrl: clean,
+          badgeText: 'Custom URL',
+          channelName: 'Channel'
+        };
+      }
+    }
+
+    function updateGeneratedLinks() {
+      const parsed = parseYouTubeInput(channelInput.value);
+      state.channelTitle = parsed.channelName;
+      detectedFormatBadge.textContent = parsed.badgeText;
+
+      try {
+        const urlObj = new URL(parsed.normalizedUrl);
+
+        // Always ensure sub_confirmation is 1
+        urlObj.searchParams.set('sub_confirmation', '1');
+
+        // Append UTM parameters if provided
+        if (state.utm.source) urlObj.searchParams.set('utm_source', state.utm.source);
+        if (state.utm.medium) urlObj.searchParams.set('utm_medium', state.utm.medium);
+        if (state.utm.campaign) urlObj.searchParams.set('utm_campaign', state.utm.campaign);
+
+        state.generatedUrl = urlObj.toString();
+      } catch (e) {
+        state.generatedUrl = `${parsed.normalizedUrl}?sub_confirmation=1`;
+      }
+
+      // Update UI elements
+      outputUrlEl.textContent = state.generatedUrl;
+      testLinkBtn.href = state.generatedUrl;
+
+      // Update QR Code URL using reliable free QR generator
+      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&color=18-18-1b&bgcolor=ffffff&data=${encodeURIComponent(state.generatedUrl)}`;
+      qrImage.src = qrApiUrl;
+      downloadQrBtn.href = qrApiUrl;
+
+      // Update snippets
+      updateSnippets();
+
+      // Update simulated modal text
+      dialogChannelName.textContent = state.channelTitle;
+      modalAddressBar.textContent = state.generatedUrl.replace(/^https?:\/\//, '');
+    }
+
+    function updateSnippets() {
+      const url = state.generatedUrl;
+      const title = state.channelTitle;
+
+      if (state.activeFormat === 'html') {
+        snippetCode.textContent = 
+`<!-- YouTube Subscribe Button -->
+<a href="${url}" 
+   target="_blank" 
+   rel="noopener noreferrer"
+   style="display:inline-flex;align-items:center;background-color:#FF0000;color:#FFFFFF;padding:10px 18px;border-radius:6px;font-family:sans-serif;font-weight:bold;text-decoration:none;font-size:14px;box-shadow:0 2px 5px rgba(0,0,0,0.2);">
+  <svg style="width:20px;height:20px;margin-right:8px;fill:currentColor;" viewBox="0 0 24 24">
+    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+  </svg>
+  Subscribe on YouTube
+</a>`;
+      } else if (state.activeFormat === 'markdown') {
+        snippetCode.textContent = 
+`[![Subscribe on YouTube](https://img.shields.io/badge/YouTube-Subscribe-red?style=for-the-badge&logo=youtube)](${url})
+
+Or text link:
+👉 [Subscribe to ${title} on YouTube](${url})`;
+      } else {
+        snippetCode.textContent = 
+`🔔 Subscribe to my channel for weekly videos:
+${url}`;
+      }
+    }
+
+    /**
+     * Safe fallback copy-to-clipboard using document.execCommand('copy')
+     */
+    function copyTextToClipboard(text, successMessage) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      textarea.style.top = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+
+      let success = false;
+      try {
+        success = document.execCommand('copy');
+      } catch (err) {
+        success = false;
+      }
+      document.body.removeChild(textarea);
+
+      if (success) {
+        showToast(successMessage || 'Copied to clipboard!');
+      } else {
+        showToast('Please select and copy manually');
+      }
+      return success;
+    }
+
+    /* Toast Notification Handler */
+    let toastTimeout;
+    function showToast(msg) {
+      clearTimeout(toastTimeout);
+      toastMessage.textContent = msg;
+      toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-20');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-20');
+      }, 2500);
+    }
+
+    // Input live changes
+    channelInput.addEventListener('input', () => {
+      updateGeneratedLinks();
+    });
+
+    // Clear Button
+    clearBtn.addEventListener('click', () => {
+      channelInput.value = '';
+      channelInput.focus();
+      updateGeneratedLinks();
+    });
+
+    // Paste button
+    pasteBtn.addEventListener('click', async () => {
+      try {
+        if (navigator.clipboard && navigator.clipboard.readText) {
+          const text = await navigator.clipboard.readText();
+          if (text) {
+            channelInput.value = text;
+            updateGeneratedLinks();
+            showToast('Pasted from clipboard!');
+            return;
+          }
+        }
+      } catch (e) {
+        // clipboard access restricted
+      }
+      channelInput.focus();
+      showToast('Press Ctrl+V / Cmd+V to paste');
+    });
+
+    // Preset buttons
+    presetBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        channelInput.value = btn.dataset.url;
+        updateGeneratedLinks();
+        showToast(`Loaded preset: ${btn.dataset.url}`);
+      });
+    });
+
+    // Primary Copy Button
+    copyPrimaryBtn.addEventListener('click', () => {
+      copyTextToClipboard(state.generatedUrl, 'Subscribe URL copied!');
+      copyPrimaryText.textContent = 'Copied!';
+      setTimeout(() => {
+        copyPrimaryText.textContent = 'Copy Link';
+      }, 2000);
+    });
+
+    // Copy Snippet Code Button
+    copySnippetBtn.addEventListener('click', () => {
+      copyTextToClipboard(snippetCode.textContent, `${state.activeFormat.toUpperCase()} snippet copied!`);
+    });
+
+    // Format Tab Buttons
+    formatTabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        formatTabBtns.forEach(b => {
+          b.classList.remove('bg-zinc-800', 'text-white', 'active');
+          b.classList.add('text-zinc-400');
+        });
+        btn.classList.add('bg-zinc-800', 'text-white', 'active');
+        btn.classList.remove('text-zinc-400');
+        state.activeFormat = btn.dataset.format;
+        updateSnippets();
+      });
+    });
+
+    // UTM Toggle
+    utmToggleBtn.addEventListener('click', () => {
+      const isHidden = utmContainer.classList.contains('hidden');
+      if (isHidden) {
+        utmContainer.classList.remove('hidden');
+        utmArrow.classList.add('rotate-180');
+      } else {
+        utmContainer.classList.add('hidden');
+        utmArrow.classList.remove('rotate-180');
+      }
+    });
+
+    // UTM Inputs
+    [utmSource, utmMedium, utmCampaign].forEach(input => {
+      input.addEventListener('input', () => {
+        state.utm.source = (utmSource.value || '').trim();
+        state.utm.medium = (utmMedium.value || '').trim();
+        state.utm.campaign = (utmCampaign.value || '').trim();
+        updateGeneratedLinks();
+      });
+    });
+
+    // Modal Simulation Controls
+    openPreviewModalBtn.addEventListener('click', () => {
+      previewModal.classList.remove('hidden');
+      previewModal.classList.add('flex');
+    });
+
+    const closePreviewModal = () => {
+      previewModal.classList.add('hidden');
+      previewModal.classList.remove('flex');
+    };
+
+    closePreviewModalBtn.addEventListener('click', closePreviewModal);
+    modalCancelBtn.addEventListener('click', closePreviewModal);
+    modalSubscribeBtn.addEventListener('click', () => {
+      showToast('🎉 Simulated Subscription Confirmed!');
+      closePreviewModal();
+    });
+
+    previewModal.addEventListener('click', (e) => {
+      if (e.target === previewModal) closePreviewModal();
+    });
+
+    // Show QR quick scroll / action
+    showQrBtn.addEventListener('click', () => {
+      qrImage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      qrImage.parentElement.classList.add('ring-2', 'ring-red-500');
+      setTimeout(() => {
+        qrImage.parentElement.classList.remove('ring-2', 'ring-red-500');
+      }, 1500);
+    });
+
+    // How It Works Guide Modal
+    howItWorksBtn.addEventListener('click', () => {
+      guideModal.classList.remove('hidden');
+      guideModal.classList.add('flex');
+    });
+
+    const closeGuide = () => {
+      guideModal.classList.add('hidden');
+      guideModal.classList.remove('flex');
+    };
+
+    closeGuideModalBtn.addEventListener('click', closeGuide);
+    guideGotItBtn.addEventListener('click', closeGuide);
+    guideModal.addEventListener('click', (e) => {
+      if (e.target === guideModal) closeGuide();
+    });
+
+    window.onload = function() {
+      updateGeneratedLinks();
+    };
+  </script>
+</body>
+</html>
